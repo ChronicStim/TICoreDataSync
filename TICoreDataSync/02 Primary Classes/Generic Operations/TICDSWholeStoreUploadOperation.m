@@ -229,7 +229,7 @@
 
 -(void)uploadingWholeStoreFileToThisClientTemporaryWholeStoreDirectoryMadeProgress;
 {
-    TICDSLog(TICDSLogVerbosityStartAndEndOfEachOperationPhase, @"Uploading the WholeStore file to this client's temporary WholeStore directory made progress %.2f",[self progress]);
+    //TICDSLog(TICDSLogVerbosityStartAndEndOfEachOperationPhase, @"Uploading the WholeStore file to this client's temporary WholeStore directory made progress %.2f",[self progress]);
     
     [self operationDidMakeProgress];
 }
@@ -269,7 +269,7 @@
 
 - (void)uploadingLocalAppliedSyncChangeSetsFileToThisClientTemporaryWholeStoreDirectoryMadeProgress;
 {
-    TICDSLog(TICDSLogVerbosityStartAndEndOfEachOperationPhase, @"Uploading the AppliedSyncChanges file to this client's temporary WholeStore directory made progress %.2f",[self progress]);
+    //TICDSLog(TICDSLogVerbosityStartAndEndOfEachOperationPhase, @"Uploading the AppliedSyncChanges file to this client's temporary WholeStore directory made progress %.2f",[self progress]);
     
     [self operationDidMakeProgress];
 }

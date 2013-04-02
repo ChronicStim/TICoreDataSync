@@ -116,7 +116,7 @@
 
 -(void)ticdPrivate_operationDidMakeProgress;
 {
-    TICDSLog(TICDSLogVerbosityStartAndEndOfMainOperationPhase, @"TICDSOperation reported progress");
+    //TICDSLog(TICDSLogVerbosityStartAndEndOfMainOperationPhase, @"TICDSOperation reported progress");
     if ([self ti_delegateRespondsToSelector:@selector(operationReportedProgress:)]) {
         [self runOnMainQueueWithoutDeadlocking:^{
             [(id)self.delegate operationReportedProgress:self];

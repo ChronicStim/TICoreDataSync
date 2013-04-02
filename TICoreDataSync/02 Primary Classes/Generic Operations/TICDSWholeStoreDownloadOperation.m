@@ -77,7 +77,7 @@
 
 -(void)downloadingWholeStoreFileMadeProgress;
 {
-    TICDSLog(TICDSLogVerbosityStartAndEndOfEachOperationPhase, @"Downloading the WholeStore file to this client made progress %.2f",[self progress]);
+    //TICDSLog(TICDSLogVerbosityStartAndEndOfEachOperationPhase, @"Downloading the WholeStore file to this client made progress %.2f",[self progress]);
     
     [self operationDidMakeProgress];
 }
@@ -121,7 +121,7 @@
 
 - (void)downloadingAppliedSyncChangeSetsFileMadeProgress;
 {
-    TICDSLog(TICDSLogVerbosityStartAndEndOfEachOperationPhase, @"Downloading the AppliedSyncChanges file to this client made progress %.2f",[self progress]);
+    //TICDSLog(TICDSLogVerbosityStartAndEndOfEachOperationPhase, @"Downloading the AppliedSyncChanges file to this client made progress %.2f",[self progress]);
     
     [self operationDidMakeProgress];
 }

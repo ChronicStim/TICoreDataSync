@@ -664,7 +664,7 @@
 
 -(void)wholeStoreUploadOperationReportedProgress:(TICDSWholeStoreUploadOperation *)anOperation;
 {
-    TICDSLog(TICDSLogVerbosityStartAndEndOfEachPhase, @"Whole Store Upload Operation Progress Reported: %.2f",[anOperation progress]);
+    //TICDSLog(TICDSLogVerbosityStartAndEndOfEachPhase, @"Whole Store Upload Operation Progress Reported: %.2f",[anOperation progress]);
     
     if ([self ti_delegateRespondsToSelector:@selector(documentSyncManager:whileUploadingWholeStoreDidReportProgress:)]) {
         [self runOnMainQueueWithoutDeadlocking:^{
@@ -794,7 +794,7 @@
 
 -(void)wholeStoreDownloadOperationReportedProgress:(TICDSWholeStoreDownloadOperation *)anOperation;
 {
-    TICDSLog(TICDSLogVerbosityStartAndEndOfEachPhase, @"Whole Store Download Operation Progress Reported: %.2f",[anOperation progress]);
+    //TICDSLog(TICDSLogVerbosityStartAndEndOfEachPhase, @"Whole Store Download Operation Progress Reported: %.2f",[anOperation progress]);
     
     if ([self ti_delegateRespondsToSelector:@selector(documentSyncManager:whileDownloadingWholeStoreDidReportProgress:)]) {
         [self runOnMainQueueWithoutDeadlocking:^{
