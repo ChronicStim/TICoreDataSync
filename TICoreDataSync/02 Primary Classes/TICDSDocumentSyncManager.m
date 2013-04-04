@@ -1048,24 +1048,40 @@
     self.coreDataFactory = nil;
     [self.syncChangesMOCs setValue:nil forKey:[self keyForContext:self.primaryDocumentMOC]];
 
-    // move UnsynchronizedSyncChanges file to SyncChangesBeingSynchronized
-    BOOL success = [self.fileManager moveItemAtPath:self.unsynchronizedSyncChangesStorePath toPath:self.syncChangesBeingSynchronizedStorePath error:&anyError];
+    NSManagedObjectContext *syncChangesManagedObjectContext = [self syncChangesMocForDocumentMoc:self.primaryDocumentMOC];
+    BOOL success = [syncChangesManagedObjectContext save:&anyError];
+    
+    if (success == NO) {
+        TICDSLog(TICDSLogVerbosityErrorsOnly, @"Sync Manager failed to save Sync Changes context with error: %@", anyError);
+        TICDSLog(TICDSLogVerbosityErrorsOnly, @"Sync Manager cannot continue processing any further, so bailing");
+        [self bailFromSynchronizationProcessWithError:[TICDSError errorWithCode:TICDSErrorCodeCoreDataFetchError underlyingError:[TICDSError errorWithCode:TICDSErrorCodeFailedToSaveSyncChangesMOC underlyingError:anyError classAndMethod:__PRETTY_FUNCTION__] classAndMethod:__PRETTY_FUNCTION__]];
+        
+        return;
+    }
+
+    // Copy UnsynchronizedSyncChanges file to SyncChangesBeingSynchronized
+    success = [self.fileManager copyItemAtPath:self.unsynchronizedSyncChangesStorePath toPath:self.syncChangesBeingSynchronizedStorePath error:&anyError];
 
     if (success == NO) {
-        TICDSLog(TICDSLogVerbosityErrorsOnly, @"Failed to move UnsynchronizedSyncChanges.syncchg to SyncChangesBeingSynchronized.syncchg");
+        TICDSLog(TICDSLogVerbosityErrorsOnly, @"Failed to copy UnsynchronizedSyncChanges.syncchg to SyncChangesBeingSynchronized.syncchg");
         [self bailFromSynchronizationProcessWithError:[TICDSError errorWithCode:TICDSErrorCodeFileManagerError underlyingError:anyError classAndMethod:__PRETTY_FUNCTION__]];
         return;
     }
+    
+    [self.fileManager removeItemAtPath:self.unsynchronizedSyncChangesStorePath error:&anyError];
+    if (success == NO) {
+        TICDSLog(TICDSLogVerbosityErrorsOnly, @"Failed to remove UnsynchronizedSyncChanges.syncchg, but not absolutely fatal so continuing.");
+    }
 
     // setup the syncChangesMOC
-    TICDSLog(TICDSLogVerbosityEveryStep, @"Re-Creating SyncChangesMOC");
-    [self addSyncChangesMocForDocumentMoc:self.primaryDocumentMOC];
-    if ([self syncChangesMocForDocumentMoc:self.primaryDocumentMOC] == nil) {
-        TICDSLog(TICDSLogVerbosityErrorsOnly, @"Failed to create sync changes MOC");
-        [self bailFromSynchronizationProcessWithError:[TICDSError errorWithCode:TICDSErrorCodeFailedToCreateSyncChangesMOC classAndMethod:__PRETTY_FUNCTION__]];
-        return;
-    }
-    TICDSLog(TICDSLogVerbosityEveryStep, @"Finished creating SyncChangesMOC");
+//    TICDSLog(TICDSLogVerbosityEveryStep, @"Re-Creating SyncChangesMOC");
+//    [self addSyncChangesMocForDocumentMoc:self.primaryDocumentMOC];
+//    if ([self syncChangesMocForDocumentMoc:self.primaryDocumentMOC] == nil) {
+//        TICDSLog(TICDSLogVerbosityErrorsOnly, @"Failed to create sync changes MOC");
+//        [self bailFromSynchronizationProcessWithError:[TICDSError errorWithCode:TICDSErrorCodeFailedToCreateSyncChangesMOC classAndMethod:__PRETTY_FUNCTION__]];
+//        return;
+//    }
+//    TICDSLog(TICDSLogVerbosityEveryStep, @"Finished creating SyncChangesMOC");
 }
 
 - (void)synchronizationOperation:(TICDSSynchronizationOperation *)anOperation processedChangeNumber:(NSNumber *)changeNumber outOfTotalChangeCount:(NSNumber *)totalChangeCount fromClientWithID:(NSString *)clientIdentifier
@@ -1615,6 +1631,7 @@
     BOOL success = NO;
 
     TICDSLog(TICDSLogVerbosityStartAndEndOfEachPhase, @"Sync Manager will save Sync Changes context");
+
     NSManagedObjectContext *syncChangesManagedObjectContext = [self syncChangesMocForDocumentMoc:documentManagedObjectContext];
     success = [syncChangesManagedObjectContext save:&anyError];
 
@@ -2015,33 +2032,36 @@
 
 #pragma mark - Background State Support
 
-- (void) beginBackgroundTask
+- (void)beginBackgroundTask
 {
     self.backgroundTaskID = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-        [self endBackgroundTask];
-    }];
-    TICDSLog(TICDSLogVerbosityEveryStep,@"Doc Sync Manager (%@), Task ID (%i) is begining.",[self class],self.backgroundTaskID);
+                                 [self endBackgroundTask];
+                             }];
+    TICDSLog(TICDSLogVerbosityEveryStep, @"Doc Sync Manager (%@), Task ID (%i) is begining.", [self class], self.backgroundTaskID);
 }
 
-- (void) endBackgroundTask
+- (void)endBackgroundTask
 {
-    if (UIBackgroundTaskInvalid != _backgroundTaskID) {
-        switch ([[UIApplication sharedApplication] applicationState]) {
-            case UIApplicationStateActive:  {
-                TICDSLog(TICDSLogVerbosityEveryStep,@"Doc Sync Manager (%@), Task ID (%i) is ending while app state is Active",[self class],self.backgroundTaskID);
-            }   break;
-            case UIApplicationStateInactive:  {
-                TICDSLog(TICDSLogVerbosityEveryStep,@"Doc Sync Manager (%@), Task ID (%i) is ending while app state is Inactive",[self class],self.backgroundTaskID);
-            }   break;
-            case UIApplicationStateBackground:  {
-                TICDSLog(TICDSLogVerbosityEveryStep,@"Doc Sync Manager (%@), Task ID (%i) is ending while app state is Background with %.0f seconds remaining",[self class],self.backgroundTaskID,[[UIApplication sharedApplication] backgroundTimeRemaining]);
-            }   break;
-            default:
-                break;
-        }
-        [[UIApplication sharedApplication] endBackgroundTask: self.backgroundTaskID];
-        self.backgroundTaskID = UIBackgroundTaskInvalid;
+    if (self.backgroundTaskID == UIBackgroundTaskInvalid) {
+        return;
     }
+
+    switch ([[UIApplication sharedApplication] applicationState]) {
+        case UIApplicationStateActive:  {
+            TICDSLog(TICDSLogVerbosityEveryStep, @"Doc Sync Manager (%@), Task ID (%i) is ending while app state is Active", [self class], self.backgroundTaskID);
+        }   break;
+        case UIApplicationStateInactive:  {
+            TICDSLog(TICDSLogVerbosityEveryStep, @"Doc Sync Manager (%@), Task ID (%i) is ending while app state is Inactive", [self class], self.backgroundTaskID);
+        }   break;
+        case UIApplicationStateBackground:  {
+            TICDSLog(TICDSLogVerbosityEveryStep, @"Doc Sync Manager (%@), Task ID (%i) is ending while app state is Background with %.0f seconds remaining", [self class], self.backgroundTaskID, [[UIApplication sharedApplication] backgroundTimeRemaining]);
+        }   break;
+        default:
+            break;
+    }
+
+    [[UIApplication sharedApplication] endBackgroundTask:self.backgroundTaskID];
+    self.backgroundTaskID = UIBackgroundTaskInvalid;
 }
 
 - (void)cancelNonBackgroundStateOperations;
