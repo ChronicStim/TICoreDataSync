@@ -49,7 +49,10 @@
     NSOperationQueue *_otherTasksQueue;
     
     NSString *_integrityKey;
+
+#if TARGET_OS_IPHONE
     UIBackgroundTaskIdentifier _backgroundTaskID;
+#endif
     BOOL _shouldContinueProcessingInBackgroundState;
 }
 
@@ -223,6 +226,22 @@
  @param anIdentifier The unique synchronization identifier of the client to delete. */
 - (void)deleteDocumentSynchronizationDataForClientWithIdentifier:(NSString *)anIdentifier;
 
+#pragma mark - Polling methods
+
+/** @name Polling Remote Storage for Changes */
+
+/** Begin polling the remote storage for changes to the sync directory.
+ 
+ This method will cause the document sync manager to periodically poll the remote storage for changes to the sync directory and will kick off a sync if changes are found.
+ */
+- (void)beginPollingRemoteStorageForChanges;
+
+/** Stop polling the remote storage for changes to the sync directory.
+ 
+ This method will cause the document sync manager to stop polling the remote storage for changes to the sync directory.
+ */
+- (void)stopPollingRemoteStorageForChanges;
+
 #pragma mark - Overridden Methods
 /** @name Methods Overridden by Subclasses */
 
@@ -287,14 +306,6 @@
  @param aMoc The synchronized managed object context.
  */
 - (void)synchronizedMOCWillSave:(NSManagedObjectContext *)aMoc;
-
-/** Indicate that the synchronized managed object context completed a successful save.
- 
- This method is called automatically by `NSManagedObjectContext` when it has successfully completed a `save:`.
- 
- @param aMoc The synchronized managed object context.
- */
-- (void)synchronizedMOCDidSave:(NSManagedObjectContext *)aMoc;
 
 #pragma mark - Properties
 /** @name Properties */
@@ -378,8 +389,10 @@ This value is set automatically by the application sync manager. */
 /** Used to indicate if the document sync manager has been configured via the -configureWithDelegate:appSyncManager:managedObjectContext:documentIdentifier:description:userInfo: method. */
 @property (nonatomic, getter = isConfigured) BOOL configured;
 
+#if TARGET_OS_IPHONE
 /** Unique task identifier used when Sync Manager is performing a series of tasks that should be continued after app goes into background state */
 @property (nonatomic, assign) UIBackgroundTaskIdentifier backgroundTaskID;
+#endif
 
 /** Indicates whether the document sync manager should be setup to continue processing after the app has been moved from the Active to Background state */
 @property (nonatomic, assign) BOOL shouldContinueProcessingInBackgroundState;

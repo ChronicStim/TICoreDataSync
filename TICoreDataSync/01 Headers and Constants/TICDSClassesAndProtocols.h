@@ -12,6 +12,7 @@
 @class TICDSSynchronizedManagedObject;
 @class TICDSSyncConflict;
 @class TICDSSynchronizationOperationManagedObjectContext;
+@class TICDSSyncTransaction;
 
 #pragma mark Operations
 @class TICDSOperation;
@@ -81,6 +82,19 @@
 @class SSZipArchive;
 
 #pragma mark - DELEGATE PROTOCOLS
+#pragma mark Sync Transaction
+
+/** The `TICDSSyncTransactionDelegate` protocol defines the methods implemented by delegates of a `TICDSSyncTransaction` object. */
+@protocol TICDSSyncTransactionDelegate <NSObject>
+
+/** Informs the delegate that the sync transaction is ready to be closed.
+  
+ @param syncTransaction The sync transaction object that sent the message.
+*/
+- (void)syncTransactionIsReadyToBeClosed:(TICDSSyncTransaction *)syncTransaction;
+
+@end
+
 #pragma mark Application Sync Manager
 /** The `TICDSApplicationSyncManagerDelegate` protocol defines the methods implemented by delegates of a `TICDSApplicationSyncManager` object. */
 
@@ -132,10 +146,15 @@
  @param aSyncManager The application sync manager object that sent the message. */
 - (void)applicationSyncManagerDidFinishRegistering:(TICDSApplicationSyncManager *)aSyncManager;
 
-/** Asks the delegate whether or not the application sync manager should support continued operation processing after the app has been sent to a background state. .
+/** Asks the delegate whether or not the application sync manager should support continued operation processing after the app has been sent to a background state. If this delegate method isn't implemented the application sync manager defaults to YES and will process items in the background. Background processing currently only applies to sync operations running on iOS.
  
  @param aSyncManager The application sync manager object that sent the message. */
 - (BOOL)applicationSyncManagerShouldSupportProcessingInBackgroundState:(TICDSApplicationSyncManager *)aSyncManager;
+
+/** Asks the delegate whether or not the application sync manager should support compressing the whole store file when transferring it between the local and remote locations. If this delegate method isn't implemented the application sync manager defaults to YES and will compress the whole store.
+ 
+ @param aSyncManager The application sync manager object that sent the message. */
+- (BOOL)applicationSyncManagerShouldUseCompressionForWholeStoreMoves:(TICDSApplicationSyncManager *)aSyncManager;
 
 #pragma mark Listing Previously Synchronized Documents
 /** @name Listing Previously Synchronized Documents */
@@ -636,24 +655,24 @@
 
 /** Informs the delegate that the document sync manager has begun to process the changes that have occurred since the previous `save:` of the managed object context.
  
- At the end of the process, one of the `documentSyncManager:didFailToProcessSyncChangesAfterManagedObjectContextDidSave:withError:` or `documentSyncManager:didFinishProcessingSyncChangesAfterManagedObjectContextDidSave:` methods will be called.
+ At the end of the process, one of the `documentSyncManager:didFailToProcessSyncChangesBeforeManagedObjectContextWillSave:withError:` or `documentSyncManager:didFinishProcessingSyncChangesBeforeManagedObjectContextWillSave:` methods will be called.
  
  @param aSyncManager The document sync manager object that sent the message.
  @param aMoc The managed object context. */
-- (void)documentSyncManager:(TICDSDocumentSyncManager *)aSyncManager didBeginProcessingSyncChangesAfterManagedObjectContextDidSave:(NSManagedObjectContext *)aMoc;
+- (void)documentSyncManager:(TICDSDocumentSyncManager *)aSyncManager didBeginProcessingSyncChangesBeforeManagedObjectContextWillSave:(NSManagedObjectContext *)aMoc;
 
 /** Informs the delegate that the sync manager failed to process the changes that have occurred since the previous `save:` of the managed object context.
  
  @param aSyncManager The document sync manager object that sent the message.
  @param aMoc The managed object context.
  @param anError The error that caused processing to fail. */
-- (void)documentSyncManager:(TICDSDocumentSyncManager *)aSyncManager didFailToProcessSyncChangesAfterManagedObjectContextDidSave:(NSManagedObjectContext *)aMoc withError:(NSError *)anError;
+- (void)documentSyncManager:(TICDSDocumentSyncManager *)aSyncManager didFailToProcessSyncChangesBeforeManagedObjectContextWillSave:(NSManagedObjectContext *)aMoc withError:(NSError *)anError;
 
 /** Informs the delegate that the sync manager finished processing the changes that have occurred since the previous `save:` of the managed object context.
  
  @param aSyncManager The document sync manager object that sent the message.
  @param aMoc The managed object context. */
-- (void)documentSyncManager:(TICDSDocumentSyncManager *)aSyncManager didFinishProcessingSyncChangesAfterManagedObjectContextDidSave:(NSManagedObjectContext *)aMoc;
+- (void)documentSyncManager:(TICDSDocumentSyncManager *)aSyncManager didFinishProcessingSyncChangesBeforeManagedObjectContextWillSave:(NSManagedObjectContext *)aMoc;
 
 /** Invoked to ask the delegate whether the document sync manager should initiate Synchronization automatically after finishing processing changes in a synchronized managed object context.
  
