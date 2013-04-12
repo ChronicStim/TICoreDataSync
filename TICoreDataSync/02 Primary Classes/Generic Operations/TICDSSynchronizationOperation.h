@@ -70,9 +70,9 @@
 @property (strong) NSURL *unappliedSyncChangeSetsFileLocation;
 
 /** The sync transaction to be used by this operation. */
-@property TICDSSyncTransaction *syncTransaction;
+@property (nonatomic, strong) TICDSSyncTransaction *syncTransaction;
 
 /** The sync transactions whose unsaved applied sync change files will be used as persistent stores to augment the applied sync changes managed object context. */
-@property NSArray *syncTransactions;
+@property (nonatomic, strong) NSArray *syncTransactions;
 
 @end

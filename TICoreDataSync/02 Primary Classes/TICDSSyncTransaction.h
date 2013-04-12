@@ -23,10 +23,10 @@
 @property (readonly) NSURL *unsavedAppliedSyncChangesFileURL;
 
 /** The path to the applied sync change sets file. */
-@property NSURL *appliedSyncChangesFileURL;
+@property (nonatomic, copy) NSURL *appliedSyncChangesFileURL;
 
 /** Any errors that occur while this transaction is open will be saved to this property. */
-@property NSError *error;
+@property (nonatomic, strong) NSError *error;
 
 /** The delegate that will receive `TICDSSyncTransactionDelegate` messages. */
 @property (weak) id<TICDSSyncTransactionDelegate> delegate;
