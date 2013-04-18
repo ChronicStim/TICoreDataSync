@@ -118,7 +118,9 @@
             // Save Background Context (changes made to objects in application's context)
             __block BOOL success = NO;
             [self.backgroundApplicationContext performBlockAndWait:^{
-                success = [self.backgroundApplicationContext save:&anyError];
+                [self.backgroundApplicationContext.parentContext.undoManager disableUndoRegistration];
+                success = [[self backgroundApplicationContext] save:&anyError];
+                [self.backgroundApplicationContext.parentContext.undoManager enableUndoRegistration];
             }];
 
             if (success == NO) {
@@ -600,7 +602,9 @@
             [insertedObject setPrimitiveValue:[changedAttributes valueForKey:key] forKey:key];
             [insertedObject didChangeValueForKey:key];
         }
-        
+
+        [TICDSChangeIntegrityStoreManager addSyncIDToInsertionIntegrityStore:ticdsSyncID];
+
         TICDSLog(TICDSLogVerbosityManagedObjectOutput, @"Updated object: %@", insertedObject);
     }];
 }
