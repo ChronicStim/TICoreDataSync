@@ -298,7 +298,7 @@
     NSSortDescriptor *sequenceSort = [[NSSortDescriptor alloc] initWithKey:@"changeType" ascending:YES];
     unappliedSyncChanges = [unappliedSyncChanges sortedArrayUsingDescriptors:[NSArray arrayWithObject:sequenceSort]];
 
-    NSInteger changeCount = 1;
+    NSInteger changeCount = 0;
     // Apply each object's changes in turn
     for ( TICDSSyncChange *eachChange in unappliedSyncChanges) {
         if (self.isCancelled) {
