@@ -776,8 +776,11 @@
     NSString *identifier = [anOperation documentIdentifier];
     
     TICDSLog(TICDSLogVerbosityEveryStep, @"Removing integrity key from user defaults");
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:[TICDSUtilities userDefaultsKeyForIntegrityKeyForDocumentWithIdentifier:identifier]];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    NSString *integrityKey = [TICDSUtilities userDefaultsKeyForIntegrityKeyForDocumentWithIdentifier:identifier];
+    if (nil != integrityKey) {
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:integrityKey];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
     
     if ([self ti_delegateRespondsToSelector:@selector(applicationSyncManager:didFinishDeletingDocumentWithIdentifier:)]) {
         [self runOnMainQueueWithoutDeadlocking:^{
