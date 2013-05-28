@@ -218,6 +218,11 @@
         return;
     }
     
+    if (errorCode == 404 && [path isEqualToString:[self thisDocumentSyncChangesThisClientDirectoryPath]]) {
+        TICDSLog(TICDSLogVerbosityStartAndEndOfEachOperationPhase, @"Dropbox RestClient was not able to find the directory: %@. Treating this as a non-error",path);
+        return;
+    }
+    
     if( [path isEqualToString:[self thisDocumentSyncChangesThisClientDirectoryPath]] ) {
         [self removedOldSyncChangeSetFilesWithSuccess:NO];
         return;
