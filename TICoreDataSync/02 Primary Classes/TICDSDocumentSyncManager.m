@@ -1828,14 +1828,14 @@
     }
     
     NSError *anyError = nil;
-    BOOL success = NO;
+//    BOOL success = NO;
     
     TICDSLog(TICDSLogVerbosityStartAndEndOfEachPhase, @"Sync Manager will save Sync Changes context");
     
     NSManagedObjectContext *syncChangesManagedObjectContext = [self syncChangesMocForDocumentMoc:documentManagedObjectContext];
-    success = [syncChangesManagedObjectContext save:&anyError];
+//    success = [syncChangesManagedObjectContext save:&anyError];
     
-    if (success == NO) {
+    if ([syncChangesManagedObjectContext hasChanges] && ![syncChangesManagedObjectContext save:&anyError]) {
         TICDSLog(TICDSLogVerbosityErrorsOnly, @"Sync Manager failed to save Sync Changes context with error: %@", anyError);
         TICDSLog(TICDSLogVerbosityErrorsOnly, @"Sync Manager cannot continue processing any further, so bailing");
         if ([self ti_delegateRespondsToSelector:@selector(documentSyncManager:didFailToProcessSyncChangesBeforeManagedObjectContextWillSave:withError:)]) {
@@ -1845,14 +1845,14 @@
         }
         
         return;
-    }
-    
-    TICDSLog(TICDSLogVerbosityStartAndEndOfEachPhase, @"Sync Manager saved Sync Changes context successfully");
-    if ([self ti_delegateRespondsToSelector:@selector(documentSyncManager:didFinishProcessingSyncChangesBeforeManagedObjectContextWillSave:)]) {
-        [self runOnMainQueueWithoutDeadlocking:^{
-            [(id)self.delegate documentSyncManager:self didFinishProcessingSyncChangesBeforeManagedObjectContextWillSave:documentManagedObjectContext];
-        }];
-    }
+    } else {
+        TICDSLog(TICDSLogVerbosityStartAndEndOfEachPhase, @"Sync Manager saved Sync Changes context successfully");
+        if ([self ti_delegateRespondsToSelector:@selector(documentSyncManager:didFinishProcessingSyncChangesBeforeManagedObjectContextWillSave:)]) {
+            [self runOnMainQueueWithoutDeadlocking:^{
+                [(id)self.delegate documentSyncManager:self didFinishProcessingSyncChangesBeforeManagedObjectContextWillSave:documentManagedObjectContext];
+            }];
+        }
+    }    
 }
 
 - (void)synchronizedMOCDidSave:(NSNotification *)notification
