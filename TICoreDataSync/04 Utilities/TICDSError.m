@@ -62,7 +62,11 @@ NSString *gTICDSErrorStrings[] = {
 
 + (NSError *)errorWithCode:(TICDSErrorCode)aCode underlyingError:(NSError *)anUnderlyingError userInfo:(id)someInfo classAndMethod:(const char *)aClassAndMethod
 {
-    NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithObject:gTICDSErrorStrings[aCode] forKey:NSLocalizedDescriptionKey];
+    NSString *errorString = gTICDSErrorStrings[aCode];
+    if (nil == errorString) {
+        errorString = @"Error code could not be resolved.";
+    }
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithObject:errorString forKey:NSLocalizedDescriptionKey];
     
     if( someInfo ) {
         [userInfo setValue:someInfo forKey:kTICDSErrorUserInfo];
