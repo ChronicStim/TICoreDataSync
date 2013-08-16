@@ -14,6 +14,7 @@
 #else
 #import <DropboxSDK/DropboxOSX.h>
 #endif
+#import "DBDeltaEntry.h"
 
 @interface TICDSDropboxSDKBasedDocumentSyncManager () <DBRestClientDelegate>
 
