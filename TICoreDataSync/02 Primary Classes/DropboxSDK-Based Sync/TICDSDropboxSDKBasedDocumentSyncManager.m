@@ -144,6 +144,8 @@
         }
 
         self.remotePollingTimer = [NSTimer scheduledTimerWithTimeInterval:[retryAfterNumber doubleValue] target:self selector:@selector(pollRemoteStorage:) userInfo:nil repeats:NO];
+    } else if (error.code == 403){
+        self.remotePollingTimer = nil;
     } else {
         self.remotePollingTimer = [NSTimer scheduledTimerWithTimeInterval:60.0 target:self selector:@selector(pollRemoteStorage:) userInfo:nil repeats:NO];
     }
@@ -159,6 +161,14 @@
     }
     
     return _restClient;
+}
+
+-(void)resetDBRestClient;
+{
+    if (nil != _restClient) {
+        [_restClient cancelAllRequests];
+        [self setRestClient:nil];
+    }
 }
 
 #pragma mark - Operation Classes

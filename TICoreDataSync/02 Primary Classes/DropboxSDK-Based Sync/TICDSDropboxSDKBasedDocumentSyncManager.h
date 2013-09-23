@@ -84,5 +84,9 @@
 /** The path to this client's RecentSync file inside this document's `RecentSyncs` directory. */
 @property (weak, nonatomic, readonly) NSString *thisDocumentRecentSyncsThisClientFilePath;
 
+
+-(void)resetDBRestClient;
+
+
 @end
 
