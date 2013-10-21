@@ -41,14 +41,18 @@ static NSLock *changeStoreLock = nil;
 + (void)addSyncIDToDeletionIntegrityStore:(NSString *)ticdsSyncID
 {
     @synchronized(deletionStoreLock) {
-        [[[self sharedChangeIntegrityStoreManager] deletionSet] addObject:ticdsSyncID];
+        if (nil != ticdsSyncID) {
+            [[[self sharedChangeIntegrityStoreManager] deletionSet] addObject:ticdsSyncID];
+        }
     }
 }
 
 + (void)removeSyncIDFromDeletionIntegrityStore:(NSString *)ticdsSyncID
 {
     @synchronized(deletionStoreLock) {
-        [[[self sharedChangeIntegrityStoreManager] deletionSet] removeObject:ticdsSyncID];
+        if (nil != ticdsSyncID) {
+            [[[self sharedChangeIntegrityStoreManager] deletionSet] removeObject:ticdsSyncID];
+        }
     }
 }
 
@@ -67,14 +71,18 @@ static NSLock *changeStoreLock = nil;
 + (void)addSyncIDToInsertionIntegrityStore:(NSString *)ticdsSyncID
 {
     @synchronized(insertionStoreLock) {
-        [[[self sharedChangeIntegrityStoreManager] insertionSet] addObject:ticdsSyncID];
+        if (nil != ticdsSyncID) {
+            [[[self sharedChangeIntegrityStoreManager] insertionSet] addObject:ticdsSyncID];
+        }
     }
 }
 
 + (void)removeSyncIDFromInsertionIntegrityStore:(NSString *)ticdsSyncID
 {
     @synchronized(insertionStoreLock) {
-        [[[self sharedChangeIntegrityStoreManager] insertionSet] removeObject:ticdsSyncID];
+        if (nil != ticdsSyncID) {
+            [[[self sharedChangeIntegrityStoreManager] insertionSet] removeObject:ticdsSyncID];
+        }
     }
 }
 
