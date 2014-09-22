@@ -1138,7 +1138,7 @@ id __strong gTICDSDefaultApplicationSyncManager = nil;
     self.backgroundTaskID = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
                                  [self endBackgroundTask];
                              }];
-    TICDSLog(TICDSLogVerbosityEveryStep, @"App Sync Manager (%@), Task ID (%i) is begining.", [self class], self.backgroundTaskID);
+    TICDSLog(TICDSLogVerbosityEveryStep, @"App Sync Manager (%@), Task ID (%lu) is begining.", [self class], (unsigned long)self.backgroundTaskID);
 #endif
 }
 
@@ -1151,13 +1151,13 @@ id __strong gTICDSDefaultApplicationSyncManager = nil;
 
     switch ([[UIApplication sharedApplication] applicationState]) {
         case UIApplicationStateActive:  {
-            TICDSLog(TICDSLogVerbosityEveryStep, @"App Sync Manager (%@), Task ID (%i) is ending while app state is Active", [self class], self.backgroundTaskID);
+            TICDSLog(TICDSLogVerbosityEveryStep, @"App Sync Manager (%@), Task ID (%lu) is ending while app state is Active", [self class], (unsigned long)self.backgroundTaskID);
         }   break;
         case UIApplicationStateInactive:  {
-            TICDSLog(TICDSLogVerbosityEveryStep, @"App Sync Manager (%@), Task ID (%i) is ending while app state is Inactive", [self class], self.backgroundTaskID);
+            TICDSLog(TICDSLogVerbosityEveryStep, @"App Sync Manager (%@), Task ID (%lu) is ending while app state is Inactive", [self class], (unsigned long)self.backgroundTaskID);
         }   break;
         case UIApplicationStateBackground:  {
-            TICDSLog(TICDSLogVerbosityEveryStep, @"App Sync Manager (%@), Task ID (%i) is ending while app state is Background with %.0f seconds remaining", [self class], self.backgroundTaskID, [[UIApplication sharedApplication] backgroundTimeRemaining]);
+            TICDSLog(TICDSLogVerbosityEveryStep, @"App Sync Manager (%@), Task ID (%lu) is ending while app state is Background with %.0f seconds remaining", [self class], (unsigned long)self.backgroundTaskID, [[UIApplication sharedApplication] backgroundTimeRemaining]);
         }   break;
         default:
             break;
@@ -1174,14 +1174,14 @@ id __strong gTICDSDefaultApplicationSyncManager = nil;
     @synchronized(self) {
         for (TICDSOperation *op in [self.registrationQueue operations]) {
             if (!op.shouldContinueProcessingInBackgroundState) {
-                TICDSLog(TICDSLogVerbosityEveryStep,@"App Sync Manager is cancelling operation %@ (id:%i) because app has gone to background state.",[self class],self.backgroundTaskID);
+                TICDSLog(TICDSLogVerbosityEveryStep,@"App Sync Manager is cancelling operation %@ (id:%lu) because app has gone to background state.",[self class],(unsigned long)self.backgroundTaskID);
                 [op cancel];
             }
         }
         
         for (TICDSOperation *op in [self.otherTasksQueue operations]) {
             if (!op.shouldContinueProcessingInBackgroundState) {
-                TICDSLog(TICDSLogVerbosityEveryStep,@"App Sync Manager is cancelling operation %@ (id:%i) because app has gone to background state.",[self class],self.backgroundTaskID);
+                TICDSLog(TICDSLogVerbosityEveryStep,@"App Sync Manager is cancelling operation %@ (id:%lu) because app has gone to background state.",[self class],(unsigned long)self.backgroundTaskID);
                 [op cancel];
             }
         }

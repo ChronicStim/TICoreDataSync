@@ -210,13 +210,13 @@
 
     switch ([[UIApplication sharedApplication] applicationState]) {
         case UIApplicationStateActive:  {
-            TICDSLog(TICDSLogVerbosityEveryStep, @"Operation (%@), Task ID (%i) is ending while app state is Active", [self class], self.backgroundTaskID);
+            TICDSLog(TICDSLogVerbosityEveryStep, @"Operation (%@), Task ID (%lu) is ending while app state is Active", [self class], (unsigned long)self.backgroundTaskID);
         }   break;
         case UIApplicationStateInactive:  {
-            TICDSLog(TICDSLogVerbosityEveryStep, @"Operation (%@), Task ID (%i) is ending while app state is Inactive", [self class], self.backgroundTaskID);
+            TICDSLog(TICDSLogVerbosityEveryStep, @"Operation (%@), Task ID (%lu) is ending while app state is Inactive", [self class], (unsigned long)self.backgroundTaskID);
         }   break;
         case UIApplicationStateBackground:  {
-            TICDSLog(TICDSLogVerbosityEveryStep, @"Operation (%@), Task ID (%i) is ending while app state is Background with %.0f seconds remaining", [self class], self.backgroundTaskID, [[UIApplication sharedApplication] backgroundTimeRemaining]);
+            TICDSLog(TICDSLogVerbosityEveryStep, @"Operation (%@), Task ID (%lu) is ending while app state is Background with %.0f seconds remaining", [self class], (unsigned long)self.backgroundTaskID, [[UIApplication sharedApplication] backgroundTimeRemaining]);
         }   break;
         default:
             break;

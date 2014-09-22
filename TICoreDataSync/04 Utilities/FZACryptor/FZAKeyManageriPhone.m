@@ -131,7 +131,7 @@
         if (searchResult == errSecItemNotFound) {
             TICDSLog(TICDSLogVerbosityEveryStep, @"FZACryptor iOS Key Manager didn't find a stored key");
         } else {
-            TICDSLog(TICDSLogVerbosityErrorsOnly, @"FZACryptor iOS Key Manager search error: %ld", searchResult);
+            TICDSLog(TICDSLogVerbosityErrorsOnly, @"FZACryptor iOS Key Manager search error: %d", (int)searchResult);
         }
 
         return nil;
@@ -148,7 +148,7 @@
     if( clearResult == errSecSuccess ) {
         TICDSLog(TICDSLogVerbosityEveryStep, @"FZACryptor iOS Key Manager deleted keychain items");
     } else {
-        TICDSLog(TICDSLogVerbosityErrorsOnly, @"FZACryptor iOS Key Manager failed to delete keychain items: %ld", clearResult);
+        TICDSLog(TICDSLogVerbosityErrorsOnly, @"FZACryptor iOS Key Manager failed to delete keychain items: %d", (int)clearResult);
     }
 }
 
