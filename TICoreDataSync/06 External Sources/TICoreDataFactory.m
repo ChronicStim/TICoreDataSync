@@ -43,7 +43,7 @@
 {
     if( _managedObjectContext ) return _managedObjectContext;
     
-    _managedObjectContext = [[NSManagedObjectContext alloc] init];
+    _managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     [_managedObjectContext setPersistentStoreCoordinator:[self persistentStoreCoordinator]];
     
     return _managedObjectContext;
@@ -51,7 +51,7 @@
 
 - (NSManagedObjectContext *)secondaryManagedObjectContext
 {
-    NSManagedObjectContext *secondaryContext = [[NSManagedObjectContext alloc] init];
+    NSManagedObjectContext *secondaryContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
     [secondaryContext setPersistentStoreCoordinator:[self persistentStoreCoordinator]];
     
     return secondaryContext;
