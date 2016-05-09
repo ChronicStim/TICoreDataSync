@@ -123,7 +123,9 @@ static NSLock *changeStoreLock = nil;
             [storedAttributes setObject:value forKey:key];
         }
 
-        [[[self sharedChangeIntegrityStoreManager] changeDictionary] setObject:storedAttributes forKey:ticdsSyncID];
+        if (nil != ticdsSyncID) {
+            [[[self sharedChangeIntegrityStoreManager] changeDictionary] setObject:storedAttributes forKey:ticdsSyncID];
+        }
     }
 }
 
