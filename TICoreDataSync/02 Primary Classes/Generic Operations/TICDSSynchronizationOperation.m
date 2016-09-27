@@ -947,8 +947,13 @@
         [_backgroundApplicationContext setUndoManager:nil];
     }];
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+    
     [[NSNotificationCenter defaultCenter] addObserver:[self delegate] selector:@selector(backgroundManagedObjectContextDidSave:) name:NSManagedObjectContextDidSaveNotification object:_backgroundApplicationContext];
 
+#pragma clang diagnostic pop
+    
     return _backgroundApplicationContext;
 }
 
